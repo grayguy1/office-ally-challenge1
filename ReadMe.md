@@ -5,7 +5,7 @@ Members:
 - Jamshidbek Mirzakhalov
 - Sherzod Kariev
 
-## (Fill in: Patient Matching or Deep Variant)
+## Patient Matching
 
 ## Set up instructions
 1. pip install -r requirements.txt
