@@ -1,19 +1,15 @@
-"""This is a sample file for final project. 
-It contains the functions that should be submitted,
-except all it does is output a random value.
-- Dr. Licato"""
 import json
 import random
 import numpy
 from gensim.models.fasttext import load_facebook_model
-from nltk.stem import WordNetLemmatizer
-from keras.utils import to_categorical
+#from nltk.stem import WordNetLemmatizer
+#from keras.utils import to_categorical
 from nltk.tokenize import TweetTokenizer
 from nltk import tokenize
 
 from fuzzywuzzy import fuzz
 
-lemmatizer = WordNetLemmatizer()
+#lemmatizer = WordNetLemmatizer()
 tokenizer = TweetTokenizer()
 trained_model = None
 fasttext_model = None
@@ -88,7 +84,7 @@ threshold = 70
 
 weights = [1,1,2,1,2,3,1,1,1,1]
 
-for threshold in range(77, 78):
+for threshold in range(50, 100):
     labels = [-1] * len(patients)
     group = 1
     group_st_ind = 0
@@ -195,37 +191,58 @@ for threshold in range(77, 78):
     correct = 0
 
     for i in range(0, len(patients)):
-        print(f"Label: {patients[i][0]} Prediction: {labels[i]}")
+        #print(f"Label: {patients[i][0]} Prediction: {labels[i]}")
         if(int(patients[i][0]) == labels[i]):
 
             correct += 1
     
-    # 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
-    # prev_label = prev_label[0][0]
-    # correct_labels = [[check_label]]
-    # l_ind = 0
-    # for i in range(1, len(patients)):
-    #     current_label = patients[i][0]
-    #     if current_label != prev_label:
-    #         l_ind += 1
-    #         correct_labels.append([])
+    p_label = int(patients[0][0])
+    correct_labels = [[p_label]]
+    l_ind = 0
+    for i in range(1, len(patients)):
+        current_label = int(patients[i][0])
+        if current_label != p_label:
+            l_ind += 1
+            correct_labels.append([])
 
-    #     correct_labels[l_ind].append(current_label)
-    #     prev_label = current_label
+        correct_labels[l_ind].append(current_label)
+        p_label = current_label
     
-    # print(correct_labels)
+    #print(correct_labels)
 
-    # ind = 0
-    # correct = 0
-    # for label_group in correct_labels:
-    #     for i, _ in enumerate(label_group):
-    #         if i == 0:
-    #             correct += 1
-    #         else:
+    ind = 0
+    correct = 0
+    accepted_labels = []
+    for label_group in correct_labels:
+        label_group_nums = []
+        label_group_count = []
+        for i, _ in enumerate(label_group):
+            if labels[ind] not in label_group_nums:
+                label_group_nums.append(labels[ind])
+                label_group_count.append(1)
+            else:
+                lb_ind = label_group_nums.index(labels[ind])
+                label_group_count[lb_ind] += 1
                 
+            ind += 1
+        
+        while(label_group_nums != []):
+            max_sim = max(label_group_count)
+            lb_ind = label_group_count.index(max_sim)
+            guess = label_group_nums[lb_ind]
+            
+            if guess not in accepted_labels:
+                accepted_labels.append(guess)
+                correct += max_sim
+                break
+            
+            label_group_count.pop(lb_ind)
+            label_group_nums.pop(lb_ind)
+            
 
-    
-    print(labels)
+
+            
+    #print(labels)
     print("Accuracy for threshold " + str(threshold) + " : " + str(correct/201.0))
    
 
