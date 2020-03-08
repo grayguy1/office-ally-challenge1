@@ -93,6 +93,7 @@ def check_accuracy(patients, threshold, labels):
 
     ind = 0
     correct = 0
+    incorrect_ind = []
     accepted_labels = []
     for label_group in correct_labels:
         label_group_nums = []
@@ -124,6 +125,12 @@ def check_accuracy(patients, threshold, labels):
     print("Accuracy for threshold " + str(threshold) + " : " + str(correct/201.0))
 
 
+def fuzzy_sort(i, i_other, j, count, correlation):
+    if patients[i][j] != "" and patients[i_other][j] != "":
+        correlation += fuzz.token_sort_ratio(patients[i][j], patients[i_other][j])
+        count += 1
+    return count, correlation
+
 def fuzzy_approach(patients, threshold):
     labels = [-1] * len(patients)
     group = 1
@@ -151,16 +158,18 @@ def fuzzy_approach(patients, threshold):
         count += 1
 
         # compare the sexes
+        
         if patients[i][5] != "" and patients[i-1][5] != "":
             if (patients[i][5]).lower()[0] == (patients[i-1][5]).lower()[0]:
                 correlation += 100
             count += 1
 
         # compare the addresses
-        # current address 1
-        if patients[i][6] != "" and patients[i-1][6] != "":
-            correlation += fuzz.token_sort_ratio(patients[i][6], patients[i-1][6])
-            count += 1
+        
+        for j in range(6, 17):
+            count, correlation = fuzzy_sort(i, i-1, j, count, correlation)
+        '''
+        ## current address 1
         # current address 2
         if patients[i][7] != "" and patients[i-1][7] != "":
             correlation += fuzz.token_sort_ratio(patients[i][7], patients[i-1][7])
@@ -210,6 +219,7 @@ def fuzzy_approach(patients, threshold):
         if patients[i][16] != "" and patients[i-1][16] != "":
             correlation += fuzz.token_sort_ratio(patients[i][16], patients[i-1][16])
             count += 1
+        '''
         
         # print("Comparing " + str(max_correlation) + " and " + str(threshold))
         if correlation/count < threshold:
@@ -220,10 +230,78 @@ def fuzzy_approach(patients, threshold):
     return labels
 
 
+def fuzzy_approach_v2(patients, threshold):
+    labels = [-1] * len(patients)
+    group = 1
+
+    for i in range(0, len(patients)):
+        if i==0:
+            labels[i] = group
+            continue
+        
+        correlations = {}
+
+        # calculate correlations
+        for j in range(0, len(patients)):
+            # compare the names
+            if i == j:
+                continue
+            correlation = 0
+            count = 0
+            
+            correlation += fuzz.token_sort_ratio(patients[i][3], patients[j][3])
+            count += 1
+
+            # compare the birthday
+            correlation += fuzz.token_sort_ratio(patients[i][4], patients[j][4])
+            count += 1
+
+            # compare the sexes
+            
+            if patients[i][5] != "" and patients[j][5] != "":
+                if (patients[i][5]).lower()[0] == (patients[j][5]).lower()[0]:
+                    correlation += 100
+                count += 1
+
+            # compare the addresses
+            
+            for k in range(6, 17):
+                count, correlation = fuzzy_sort(i, j, k, count, correlation)
+            # print("Comparing " + str(max_correlation) + " and " + str(threshold))
+
+            correlations[j] = correlation/count
+        
+        max_correlation = max(correlations.values())
+        max_indices = list(filter(
+            lambda x: x != -1, 
+            [x if correlations[x] == max_correlation else -1 for x in correlations.keys()]))
+        
+        assoc_labels = [labels[m_ind] for m_ind in max_indices]
+
+        if max_correlation >= threshold:
+            f_l = list(filter(lambda x: x != -1, assoc_labels))
+            inp_lab = group
+            if f_l != []:
+                inp_lab = f_l[0]
+
+            for ind in max_indices:
+                labels[ind] = inp_lab
+            labels[i] = group
+
+            if f_l == []:
+                group += 1
+        else:
+            labels[i] = group
+            group += 1
+
+    return labels
+
 patients = process()
-threshold = 65
+threshold = 85
 weights = [1,1,2,1,2,3,1,1,1,1]
 
-labels = fuzzy_approach(patients, threshold)
+labels = fuzzy_approach_v2(patients, threshold)
+print(labels)
 check_accuracy(patients, threshold, labels)
    
+
