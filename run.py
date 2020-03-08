@@ -30,7 +30,6 @@ def fasttext_Vec(body):
     return output
 
 def process():
-    
     patients = []
     import csv
 
@@ -76,21 +75,61 @@ def process():
             line_count += 1
         print(f'Processed {line_count} lines.')
     return patients
+
+def check_accuracy(patients, threshold, labels):    
+    p_label = int(patients[0][0])
+    correct_labels = [[p_label]]
+    l_ind = 0
+    for i in range(1, len(patients)):
+        current_label = int(patients[i][0])
+        if current_label != p_label:
+            l_ind += 1
+            correct_labels.append([])
+
+        correct_labels[l_ind].append(current_label)
+        p_label = current_label
     
-    
+    #print(correct_labels)
 
-patients = process()
-threshold = 70
+    ind = 0
+    correct = 0
+    accepted_labels = []
+    for label_group in correct_labels:
+        label_group_nums = []
+        label_group_count = []
+        for i, _ in enumerate(label_group):
+            if labels[ind] not in label_group_nums:
+                label_group_nums.append(labels[ind])
+                label_group_count.append(1)
+            else:
+                lb_ind = label_group_nums.index(labels[ind])
+                label_group_count[lb_ind] += 1
+                
+            ind += 1
+        
+        while(label_group_nums != []):
+            max_sim = max(label_group_count)
+            lb_ind = label_group_count.index(max_sim)
+            guess = label_group_nums[lb_ind]
+            
+            if guess not in accepted_labels:
+                accepted_labels.append(guess)
+                correct += max_sim
+                break
+            
+            label_group_count.pop(lb_ind)
+            label_group_nums.pop(lb_ind)
+            
+    #print(labels)
+    print("Accuracy for threshold " + str(threshold) + " : " + str(correct/201.0))
 
-weights = [1,1,2,1,2,3,1,1,1,1]
 
-for threshold in range(50, 100):
+def fuzzy_approach(patients, threshold):
     labels = [-1] * len(patients)
     group = 1
     group_st_ind = 0
     group_end_ind = 0
     for i in range(0, len(patients)):
-
         if i==0:
             labels[i] = group
             continue
@@ -172,83 +211,19 @@ for threshold in range(50, 100):
             correlation += fuzz.token_sort_ratio(patients[i][16], patients[i-1][16])
             count += 1
         
-
-        # get the average
-
-
-        # compare against max_correlation, and update if it is bigger
-        
-    
-        
-       # print("Comparing " + str(max_correlation) + " and " + str(threshold))
+        # print("Comparing " + str(max_correlation) + " and " + str(threshold))
         if correlation/count < threshold:
             group += 1
         
         labels[i] = group
-        
-           
-
-    correct = 0
-
-    for i in range(0, len(patients)):
-        #print(f"Label: {patients[i][0]} Prediction: {labels[i]}")
-        if(int(patients[i][0]) == labels[i]):
-
-            correct += 1
     
-    p_label = int(patients[0][0])
-    correct_labels = [[p_label]]
-    l_ind = 0
-    for i in range(1, len(patients)):
-        current_label = int(patients[i][0])
-        if current_label != p_label:
-            l_ind += 1
-            correct_labels.append([])
-
-        correct_labels[l_ind].append(current_label)
-        p_label = current_label
-    
-    #print(correct_labels)
-
-    ind = 0
-    correct = 0
-    accepted_labels = []
-    for label_group in correct_labels:
-        label_group_nums = []
-        label_group_count = []
-        for i, _ in enumerate(label_group):
-            if labels[ind] not in label_group_nums:
-                label_group_nums.append(labels[ind])
-                label_group_count.append(1)
-            else:
-                lb_ind = label_group_nums.index(labels[ind])
-                label_group_count[lb_ind] += 1
-                
-            ind += 1
-        
-        while(label_group_nums != []):
-            max_sim = max(label_group_count)
-            lb_ind = label_group_count.index(max_sim)
-            guess = label_group_nums[lb_ind]
-            
-            if guess not in accepted_labels:
-                accepted_labels.append(guess)
-                correct += max_sim
-                break
-            
-            label_group_count.pop(lb_ind)
-            label_group_nums.pop(lb_ind)
-            
+    return labels
 
 
-            
-    #print(labels)
-    print("Accuracy for threshold " + str(threshold) + " : " + str(correct/201.0))
+patients = process()
+threshold = 65
+weights = [1,1,2,1,2,3,1,1,1,1]
+
+labels = fuzzy_approach(patients, threshold)
+check_accuracy(patients, threshold, labels)
    
-
-
-
-
-
-    
-
