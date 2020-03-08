@@ -1,6 +1,7 @@
 import json
 import random
 import numpy
+import csv
 from gensim.models.fasttext import load_facebook_model
 #from nltk.stem import WordNetLemmatizer
 #from keras.utils import to_categorical
@@ -29,11 +30,12 @@ def fasttext_Vec(body):
             output = numpy.add(output, numpy.zeros(300))
     return output
 
-def process():
+def process(file_data):
     patients = []
-    import csv
-
-    with open('data.csv', mode='r') as csv_file:
+    
+    #file_data = fName.read().decode("utf8")
+    #print(file_data)
+    with open(file_data, encoding="utf8") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -123,6 +125,7 @@ def check_accuracy(patients, threshold, labels):
             
     #print(labels)
     print("Accuracy for threshold " + str(threshold) + " : " + str(correct/201.0))
+    return str(correct/201.0)
 
 
 def fuzzy_sort(i, i_other, j, count, correlation):
@@ -295,13 +298,27 @@ def fuzzy_approach_v2(patients, threshold):
             group += 1
 
     return labels
+    
+patients = []
+def main1(fName, thresh):
+    global patients
+    patients = process(fName)
+    #threshold = 85
+    weights = [1,1,2,1,2,3,1,1,1,1]
+    
+    labels = fuzzy_approach(patients, int(thresh))
+    print(labels)
+    return check_accuracy(patients, int(thresh), labels)
+def main2(fName, thresh):
+    global patients
+    patients = process(fName)
+    #threshold = 85
+    weights = [1,1,2,1,2,3,1,1,1,1]
+    
+    labels = fuzzy_approach_v2(patients, int(thresh))
+    print(labels)
+    return check_accuracy(patients, int(thresh), labels)
+    
 
-patients = process()
-threshold = 85
-weights = [1,1,2,1,2,3,1,1,1,1]
-
-labels = fuzzy_approach_v2(patients, threshold)
-print(labels)
-check_accuracy(patients, threshold, labels)
    
 

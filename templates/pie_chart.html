@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title }}</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:100" rel="stylesheet">
+	<link href="./static/index.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<head>
+	<script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-database.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-auth.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>       
+	<link type="text/css" rel="stylesheet" href="./static/simplePagination/simplePagination.css"/>
+
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+	<!-- Google Fonts -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+	<!-- Bootstrap core CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Material Design Bootstrap -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.0/css/mdb.min.css" rel="stylesheet">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="./static/css/util.css">
+  <link rel="stylesheet" type="text/css" href="./static/css/main.css">
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+	
+	<div class="contact1">
+                <div class="container-contact1">
+				    <h1>{{ title }}</h1>
+					<div id="chart"></div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                            </div>
+                            <div class="custom-file">
+							  <input type="file" id="csv" name="file[]" class="custom-file-input file_multi_video"accept=".csv" aria-describedby="inputGroupFileAddon01" />
+                              <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                            </div>
+                        </div>
+                        <div class="wrap-input1 validate-input" data-validate = "URL">
+							<input class="input1" type="number" autocomplete="off" id="thresh" type="text" name="thresh" placeholder="Threshold">
+                            <span class="shadow-input1"></span>
+                        </div>
+                        
+                        <div class="wrap-input1 validate-input" data-validate = "Message is required">
+                          <p>Select your algorithm:</p>
+							<div class="control" id = "selection">
+							<input type="radio" id="alg1" name="gender" value="alg1">
+							<label>Structured data search</label><br>
+							<input type="radio" id="alg2" name="gender" value="alg2">
+							<label>Unstructured data search</label><br>
+							</div><br>
+                        </div>
+
+                        
+                        <div class="container-contact1-form-btn">
+                            <button id="start" type="button" class="contact1-form-btn">
+                                <span>
+                                    Start
+                                    <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </div>
+                </div>
+    </div>
+    
+    	
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<!-- Bootstrap tooltips -->
+	<!-- Bootstrap core JavaScript -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	<!-- MDB core JavaScript -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.0/js/mdb.min.js"></script>
+	<script src="./static/vendor/jquery/jquery-3.2.1.min.js"></script>
+	<!--==============================================================================================-->
+		<script src="./static/vendor/bootstrap/js/popper.js"></script>
+		<script src="./static/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<!--===============================================================================================-->
+		<script src="./static/vendor/select2/select2.min.js"></script>
+	<!--===============================================================================================-->
+		<script src="./static/vendor/tilt/tilt.jquery.min.js"></script>
+		<script >
+			$('.js-tilt').tilt({
+				scale: 1.1
+			})
+		</script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-23581568-13');
+	</script>
+
+<!--===============================================================================================-->
+	<script src="./static/js/main.js"></script>
+    <script>
+
+	var thisChart = null;
+	document.getElementById('start').addEventListener('click', e => {
+		console.log("here")
+		var radio_button1 = document.getElementById("alg1").checked;
+		var radio_button2 = document.getElementById("alg2").checked;
+		var threshold = document.getElementById("thresh").value;
+		var temp = "rb1"
+		if(radio_button2 == true){
+			temp = "rb2"
+		}
+		console.log(threshold)
+		var file = document.getElementById('csv').files[0]
+		console.log(file)
+		var formData = new FormData()
+		formData.append('file', file)
+		formData.append('type', temp)
+		formData.append('threshold', threshold)
+		e.preventDefault();
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", '/square', true);
+		xhr.onload = function (e) {
+			if (xhr.readyState === 4) {
+				if (xhr.status === 200) {
+					console.log(xhr.responseText);
+					//console.log(xhr.value);
+					/*$.ajax({
+						url: '/square',
+						data: formData,
+						type: 'POST',
+						contentType: false,
+						processType: false,
+						success: function(data) {
+							console.log(data)
+						},
+						error : function(e) {
+							console.log(e);
+						}
+					});*/
+					// var pieData = [
+					// {
+					// 	value: xhr.responseText * 100,
+					// 	label: "Correct",
+					// 	color : "#008000"
+					// },
+					// {
+					// 	value: (1 - xhr.responseText) * 100,
+					// 	label: "Incorrect",
+					// 	color : "#FF0000"
+					// }
+					// ];
+					/*
+					
+				  // get bar chart canvas
+				  var mychart = document.getElementById("chart").getContext("2d");
+				  steps = 10
+				  max = {{ max }}
+
+				  // draw pie chart
+				  if(thisChart != null){
+					thisChart.destroy();
+				  }
+				  
+				  thisChart = new Chart(mychart).Pie(pieData);*/
+				  //thisChart = new Chart(document.getElementById("chart").getContext("2d")).Pie(pieData)
+				  
+				  var p = document.createElement('p')
+				  console.log("Here " + p)
+					p.innerHTML = xhr.responseText * 100
+					p.style.fontSize = '15px'
+					document.getElementById('chart').appendChild(p)
+				} else {
+					console.error(xhr.statusText);
+				}
+			}
+		};
+		xhr.onerror = function (e) {
+			console.error(xhr.statusText);
+		};
+		xhr.send(formData);
+	});
+	</script>
+	
+</body>
+</html>
